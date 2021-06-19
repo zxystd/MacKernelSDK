@@ -25,6 +25,7 @@
 #ifndef _IOKIT_HID_IOHIDEVENTSERVICE_H
 #define _IOKIT_HID_IOHIDEVENTSERVICE_H
 
+#include <Availability.h>
 #include <TargetConditionals.h>
 
 #include <IOKit/IOService.h>
@@ -37,10 +38,13 @@
 #if TARGET_OS_IPHONE
 #include <IOKit/hid/IOHIDEvent.h>
 #endif
-#include "IOHIDUtility.h"
+#include <IOKit/hid/IOHIDUtility.h>
 
 #include <HIDDriverKit/IOHIDEventService.h>
 
+#ifndef __MAC_OS_X_VERSION_MIN_REQUIRED
+#error "Missing macOS target version"
+#endif
 enum 
 {
     kHIDDispatchOptionPointerNoAcceleration         = 0x01,
@@ -369,6 +373,13 @@ protected:
                                 SInt32                      deltaAxis3,
                                 IOOptionBits                options = 0 );
 
+    void                    dispatchScrollWheelEventWithFixed(
+                                AbsoluteTime                timeStamp,
+                                IOFixed                     deltaAxis1,
+                                IOFixed                     deltaAxis2,
+                                IOFixed                     deltaAxis3,
+                                IOOptionBits                options = 0 );
+
     virtual void            dispatchTabletPointerEvent(
                                 AbsoluteTime                timeStamp,
                                 UInt32                      transducerID,
@@ -411,14 +422,16 @@ public:
     virtual IOReturn        setSystemProperties( OSDictionary * properties );
     
     virtual IOReturn        setProperties( OSObject * properties ) APPLE_KEXT_OVERRIDE;
-  
+ 
+#if __MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_10_12
     virtual IOReturn        newUserClient(
                               task_t owningTask,
                               void * securityID,
                               UInt32 type,
                               OSDictionary * properties,
                               IOUserClient ** handler ) APPLE_KEXT_OVERRIDE;
- 
+#endif
+
 protected:
     OSMetaClassDeclareReservedUsed(IOHIDEventService,  0);
     virtual OSArray *       getDeviceUsagePairs();
@@ -776,6 +789,7 @@ protected:
                                                                 IOFixed                         joystickRz,
                                                                 IOOptionBits                    options         = 0 );
     
+#if __MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_10_12
     /*!
      @function dispatchBiometricEvent
      @abstract Dispatch biometric event
@@ -790,7 +804,11 @@ protected:
                                                    IOFixed                      level,
                                                    IOHIDBiometricEventType      eventType,
                                                    IOOptionBits                 options = 0);
-    
+#else
+    OSMetaClassDeclareReservedUnused(IOHIDEventService, 14);
+#endif
+
+#if __MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_10_13
     /*!
      @function copyEventForClient
      @abstract Copy event/events for client
@@ -842,7 +860,15 @@ protected:
      */
     OSMetaClassDeclareReservedUsed(IOHIDEventService, 19);
     virtual void           closeForClient(IOService *client, void *context, IOOptionBits options = 0);
-    
+#else
+    OSMetaClassDeclareReservedUnused(IOHIDEventService, 15);
+    OSMetaClassDeclareReservedUnused(IOHIDEventService, 16);
+    OSMetaClassDeclareReservedUnused(IOHIDEventService, 17);
+    OSMetaClassDeclareReservedUnused(IOHIDEventService, 18);
+    OSMetaClassDeclareReservedUnused(IOHIDEventService, 19);
+#endif
+
+#if __MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_10_14
     /*!
      @function dispatchExtendedGameControllerEvent
      @abstract Dispatch extended game controller event
@@ -891,18 +917,18 @@ protected:
                                                                 boolean_t                       thumbstickButtonLeft,
                                                                 boolean_t                       thumbstickButtonRight,
                                                                 IOOptionBits                    options         = 0 );
-    
+#else
+    OSMetaClassDeclareReservedUnused(IOHIDEventService, 20);
+#endif
+
+#if __MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_10_15
     OSMetaClassDeclareReservedUsed(IOHIDEventService, 21);
     virtual IOHIDEvent *copyMatchingEvent(OSDictionary *matching);
-    
-    OSMetaClassDeclareReservedUsed(IOHIDEventService, 22);
-    virtual void     dispatchScrollWheelEventWithFixed(AbsoluteTime                timeStamp,
-                                                       IOFixed                     deltaAxis1,
-                                                       IOFixed                     deltaAxis2,
-                                                       IOFixed                     deltaAxis3,
-                                                       IOOptionBits                options = 0);
+#else
+    OSMetaClassDeclareReservedUnused(IOHIDEventService, 21);
+#endif
 
-    
+    OSMetaClassDeclareReservedUnused(IOHIDEventService, 22);
     OSMetaClassDeclareReservedUnused(IOHIDEventService, 23);
     OSMetaClassDeclareReservedUnused(IOHIDEventService, 24);
     OSMetaClassDeclareReservedUnused(IOHIDEventService, 25);
@@ -912,10 +938,11 @@ protected:
     OSMetaClassDeclareReservedUnused(IOHIDEventService, 29);
     OSMetaClassDeclareReservedUnused(IOHIDEventService, 30);
     OSMetaClassDeclareReservedUnused(IOHIDEventService, 31);
-    
+
 public:
     virtual void            close( IOService * forClient, IOOptionBits options = 0 ) APPLE_KEXT_OVERRIDE;
     
+#if __MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_10_15
     /*! @function message
      @abstract Receives messages delivered from an attached provider.
      @discussion Handles the <code>kIOMessageDeviceSignaledWakeup</code> message
@@ -927,6 +954,7 @@ public:
      */
     
     virtual IOReturn message(UInt32 type, IOService * provider, void * argument) APPLE_KEXT_OVERRIDE;
+#endif
 };
 
 #endif /* !_IOKIT_HID_IOHIDEVENTSERVICE_H */

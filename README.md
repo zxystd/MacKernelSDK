@@ -7,7 +7,7 @@ This project lets your kernel extensions (kexts) target a broad range of XNU ker
 
 To start using **MacKernelSDK** do the following steps:
 
-1. Clone MacKernelSDK to your your project directory:
+1. Clone MacKernelSDK to your project directory:
 
     ```sh
     git clone https://github.com/acidanthera/MacKernelSDK
@@ -67,6 +67,13 @@ To compile for 32-bit you will need to add a set of flags in your project:
 - Added private headers from IOHIDFamily 1446.140.2:
     - `IOHIDPrivateKeys.h`
     - `IOHIDEventServiceKeys_Private.h`
+    - `IOHIDEvent.h`
+    - `IOHIDEventFieldDefs.h`
+    - `IOHIDEventService.h`
+    - `IOHIDEventTypes.h`
+    - `IOHIDUtility.h`
+- Added private headers from IOHIDFamily 1035.70.7:
+    - `AppleHIDUsageTables.h` (removed in newer releases)
 - Added extra compiled and reverse-engineered headers:
     - SMBus (`IOKit/IOSMBusController.h`)
     - Apple Smart Battery (`IOKit/battery/AppleSmartBatteryCommands.h`)
@@ -84,6 +91,11 @@ To compile for 32-bit you will need to add a set of flags in your project:
     - In `cdefs.h` to avoid Darwin14 aliases before 10.10
     - In `assert.h` to avoid kext assertion checking before 10.12
     - In `IOHIDDevice.h` to avoid new virtual methods before 10.14
+    - In `IOFramebuffer.h` to avoid new virtual methods before 10.13
+    - In `IONDRVFramebuffer.h` to avoid new virtual methods before 10.13
+    - In `IOSCSIParallelInterfaceController.h` to avoid new virtual methods before 10.7
+    - In `IOPCIBridge.h` to avoid new virtual methods before 10.10
+    - In `IOService.h` to avoid init methods before 10.10
 - Fixed compiler warnings:
     - In `IOPCIDevice.h` due to missing overrides
     - In `OSMetaClass.h` due to using unsupported memory checking with older clang
@@ -91,3 +103,6 @@ To compile for 32-bit you will need to add a set of flags in your project:
     - In `net`, `netinit`, `network`, `sys` due to NKE KPI deprecation
     - In `hid`, `serial`, `usb` due to missing overrides and KPI deprecation in favor of `DriverKit`
     - In `OSUnserialize.h` due to `OSStringPtr` misuse
+    - In `KUNCUserNotifications.h` due to KPI deprecation
+    - In `IOSCSIParallelInterfaceController.h` due to missing overrides
+    - In `IOPCIBridge.h` due to missing overrides
